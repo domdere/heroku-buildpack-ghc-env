@@ -246,6 +246,14 @@ if [ -e $CACHE_DIR/.cabal-sandbox ]; then
   cp -R $CACHE_DIR/.cabal-sandbox $WORKING_HOME
 fi
 
+if [ -e "${WORKING_HOME}/sources" ]; then
+  echo "-----> Adding cabal sandbox sources"
+  cp "${WORKING_HOME}/.cabal-sandbox/add-source-timestamps" "${WORKING_HOME}/add-source-timestamps"
+  cat "${WORKING_HOME}/sources" | while read F; do
+    cabal sandbox add-source ${F}
+  done
+fi
+
 echo "-----> Getting newest list of cabal packages"
 if [ -e "$CABAL_INDEX" ]; then
     now="$(date +%s)"
@@ -272,6 +280,12 @@ set-default-env LANG en_US.UTF-8
 set-default-env C_INCLUDE_PATH /app/vendor/ghc-includes:/usr/include
 set-default-env LIBRARY_PATH /app/vendor/ghc-libs:/usr/lib
 set-default-env LD_LIBRARY_PATH /app/vendor/ghc-libs:/usr/lib
+
+if [ -e "${WORKING_HOME}/sources" ]; then
+  echo "-----> clearing cabal sandbox sources"
+  mv "${WORKING_HOME}/add-source-timestamps" "${WORKING_HOME}/.cabal-sandbox/add-source-timestamps"
+fi
+
 
 echo "-----> Cleaning any source downloads from the build cache"
 rm -fr $CACHE_DIR/download
