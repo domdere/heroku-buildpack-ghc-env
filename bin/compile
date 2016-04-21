@@ -98,6 +98,39 @@ function install_prebuilt {
   fi
 }
 
+function install_hackage {
+  PKG="$1"
+  VER="$2"
+  BIN="$3"
+
+  PKGVER="${PKG}-${VER}"
+
+  SANDBOX_PARENT="${WORKING_HOME}/vendor/cabal-sandboxes"
+  SANDBOX_LOCATION="${SANDBOX_PARENT}/${PKGVER}"
+  OLD_PWD=$(pwd)
+
+  if [ -e "$CACHE_DIR/$PKGVER" -a ! -d "$CACHE_DIR/$PKGVER" ]; then
+    echo "-----> Removing mysterious package file for $PKGVER"
+    rm $CACHE_DIR/$PKGVERT
+  fi
+
+  if [ ! -e "${CACHE_DIR}/${PKGVER}" ]; then
+    echo "-----> Installing ${PKGVER} from hackage"
+    mkdir -p "${SANDBOX_LOCATION}"
+    cd "${SANDBOX_LOCATION}"
+    cabal sandbox init
+    cabal install -j ${PKGVER}
+    cd "${OLD_PWD}"
+    cp -R "${SANDBOX_LOCATION}" "${CACHE_DIR}"
+  else
+    mkdir -p "${SANDBOX_PARENT}"
+    cp -R "${CACHE_DIR}/${PKGVER}" "${SANDBOX_PARENT}"
+  fi
+
+  cp -v "${SANDBOX_LOCATION}/.cabal-sandbox/bin/${BIN}" "${WORKING_HOME}/vendor/ghc-utils"
+
+}
+
 function install_prebuilt_library {
   NAME=$1
   VER=$2
@@ -204,9 +237,9 @@ else
   cp -R $CACHE_DIR/ghc-$GHC_VER $WORKING_HOME/vendor
 fi
 
-install_prebuilt "happy" "${HAPPY_VER}"
-install_prebuilt "alex" "${ALEX_VER}"
-install_prebuilt "cpphs" "${CPPHS_VER}"
+install_hackage "happy" "${HAPPY_VER}" "happy"
+install_hackage "alex" "${ALEX_VER}" "happy"
+install_hackage "cpphs" "${CPPHS_VER}" "happy"
 
 ########## cabal-install ###########################################
 if [ ! -e $CACHE_DIR/cabal-install-$CABAL_VER ]; then
