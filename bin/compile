@@ -250,13 +250,8 @@ if [ -e $CACHE_DIR/.cabal-sandbox ]; then
   cp -R $CACHE_DIR/.cabal-sandbox $WORKING_HOME
 fi
 
-if [ -e "sources" ]; then
-  echo "-----> Adding cabal sandbox sources"
-  cp "${WORKING_HOME}/.cabal-sandbox/add-source-timestamps" "${WORKING_HOME}/add-source-timestamps"
-  cat "sources" | while read F; do
-    cabal sandbox add-source ${F}
-  done
-fi
+echo "-----> Backing up cabal sources..."
+cp "${WORKING_HOME}/.cabal-sandbox/add-source-timestamps" "${WORKING_HOME}/add-source-timestamps"
 
 echo "-----> Getting newest list of cabal packages"
 if [ -e "$CABAL_INDEX" ]; then
@@ -273,9 +268,7 @@ else
 fi
 
 echo "-----> Installing user application"
-cabal configure --disable-library-profiling --disable-executable-profiling --disable-tests --disable-library-coverage --disable-benchmarks --enable-executable-stripping --disable-split-objs || true
-cabal install -j --only-dependencies --reorder-goals --max-backjumps=-1 --disable-library-profiling --disable-tests --disable-library-coverage --disable-benchmarks --disable-documentation --disable-split-objs
-cabal build -j
+bin/build
 
 # Set context environment variables.
 set-env PATH "/app/vendor/ghc-$GHC_VER/bin:/app/vendor/ghc-utils/bin:/app/vendor/cabal-install-$CABAL_VER/bin"':$PATH'
@@ -285,10 +278,8 @@ set-default-env C_INCLUDE_PATH /app/vendor/ghc-includes:/usr/include
 set-default-env LIBRARY_PATH /app/vendor/ghc-libs:/usr/lib
 set-default-env LD_LIBRARY_PATH /app/vendor/ghc-libs:/usr/lib
 
-if [ -e "sources" ]; then
-  echo "-----> clearing cabal sandbox sources"
-  mv "${WORKING_HOME}/add-source-timestamps" "${WORKING_HOME}/.cabal-sandbox/add-source-timestamps"
-fi
+echo "-----> restoring cabal sandbox sources"
+mv "${WORKING_HOME}/add-source-timestamps" "${WORKING_HOME}/.cabal-sandbox/add-source-timestamps"
 
 
 echo "-----> Cleaning any source downloads from the build cache"
