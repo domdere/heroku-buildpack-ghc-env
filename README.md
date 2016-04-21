@@ -5,6 +5,23 @@
 
 <br />
 
+This is a fork of [begriffs/heroku-buildpack-ghc](https://github.com/begriffs/heroku-buildpack-ghc begriffs/heroku-buildpack-ghc).
+
+Its been modified to pass over control to the app/repo itself to allow for more projects with less mainstream build processes.
+
+My specific use case was dependencies managed by private submodules, which Heroku doesn't really handle, so my `bin/build` script would pull in the private repos, add them as sources to the cabal sandbox and build the main project.
+
+This also allowed me to separate the heroku build/runtime configuration and deployment from the project itself
+
+So the main two modifications are as follows:
+
+1. Does not call `cabal` to build the project, calls `bin/build`, meaning the working directory for the `bin/build` script will be the root of the repository.
+2. Clears the sandbox sources before updating the cached version of the sandbox.
+
+What follows is the original documentation from [begriffs/heroku-buildpack-ghc](https://github.com/begriffs/heroku-buildpack-ghc begriffs/heroku-buildpack-ghc).
+
+<hr />
+
 This buildpack supports frameworks like Yesod, Snap, and Happstack with
 the latest stable GHC binaries. Putting Haskell web applications online
 should be easy, and now it is. Try it for yourself.
