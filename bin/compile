@@ -237,12 +237,6 @@ else
   cp -R $CACHE_DIR/ghc-$GHC_VER $WORKING_HOME/vendor
 fi
 
-# cabal requires happy, alex and cpphs to build, need prebuilt
-# versions...
-install_prebuilt "happy" "1.19.3"
-install_prebuilt "alex" "3.1.3"
-install_prebuilt "cpphs" "1.18.4"
-
 ########## cabal-install ###########################################
 if [ ! -e $CACHE_DIR/cabal-install-$CABAL_VER ]; then
   PREBUILT_CABAL_URL=$PREBUILT/heroku-cabal-install-$CABAL_VER.tar.gz
@@ -270,6 +264,8 @@ else
   echo "-----> Restoring cached cabal $CABAL_VER binaries"
   cp -R $CACHE_DIR/cabal-install-$CABAL_VER $WORKING_HOME/vendor
 fi
+
+cabal update
 
 # Now install the user preferred versions...
 install_hackage "happy" "${HAPPY_VER}" "happy"
