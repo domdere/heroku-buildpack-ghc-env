@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -e "bin/build" ]; then
+if [ -n "$(find "$1" -name 'build' -print -quit)" ]; then
   echo "Custom Haskell" && exit 0
 else
   exit 1
