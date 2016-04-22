@@ -127,7 +127,8 @@ function install_hackage {
     cp -R "${CACHE_DIR}/${PKGVER}" "${SANDBOX_PARENT}"
   fi
 
-  cp -v "${SANDBOX_LOCATION}/.cabal-sandbox/bin/${BIN}" "${WORKING_HOME}/vendor/ghc-utils"
+  mkdir -p "${WORKING_HOME}/vendor/ghc-utils/bin"
+  cp -v "${SANDBOX_LOCATION}/.cabal-sandbox/bin/${BIN}" "${WORKING_HOME}/vendor/ghc-utils/bin"
 
 }
 
