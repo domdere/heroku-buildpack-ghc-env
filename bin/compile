@@ -50,7 +50,7 @@ if [ -f "$PRE_SCRIPT_FULL" ]; then
   $PRE_SCRIPT_FULL "$BUILD_DIR" "$CACHE_DIR $ENV_DIR"
 fi
 
-WORKING_HOME=/app
+export WORKING_HOME=/app
 
 PROFILE_PATH="$BUILD_DIR/.profile.d/haskell.sh"
 
